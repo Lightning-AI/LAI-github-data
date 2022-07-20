@@ -1,0 +1,5 @@
+lightning
+PyGithub==1.55
+retry==0.9.2
+streamlit==1.11.0
+lightning_bigquery @ git+https://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@github.com/Lightning-AI/LAI-BigQuery-Component.git@4cf2eae2a5e9c8a7133b6e0f7edaa672e7ac72c6
