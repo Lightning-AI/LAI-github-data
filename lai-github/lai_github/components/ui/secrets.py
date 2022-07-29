@@ -11,14 +11,14 @@ from lightning.app.storage import Path
 
 def write_configs(data):
 
-    filepath = Path(os.path.join(str(Path.home()), ".secrets1.json"))
+    filepath = Path(os.path.join(str(Path.home()), ".secrets2.json"))
     with open(filepath, "w") as f:
         json.dump(data, f)
 
 def read_configs():
 
     try:
-        filepath = Path(os.path.join(str(Path.home()), ".secrets1.json"))
+        filepath = Path(os.path.join(str(Path.home()), ".secrets2.json"))
         with open(filepath, "r") as f:
             return json.load(f)
     except FileNotFoundError:
@@ -45,12 +45,10 @@ def render_fn(state: AppState):
     with col2:
 
         secrets_value = st.text_input("JSON string with secrets that will be used.", type="password")
-
         save_notification_settings = st.button("Save Secrets.")
         if save_notification_settings:
             try:
                 secrets = json.loads(secrets_value)
-                state.secrets = secrets
                 st.write(f"Loaded Secrets")
                 write_configs(secrets)
                 state.refresh = True
@@ -58,10 +56,15 @@ def render_fn(state: AppState):
                 st.write("Unable to save the secrets. Expected a JSON string")
 
 class SecretsUI(L.LightningFlow):
-    def __init__(self, refresh=False):
+    def __init__(self):
         super().__init__()
         self.secrets = read_configs()
-        self.refresh = False
+        self.refresh = False if self.secrets else True
+
+    def run(self):
+        if self.refresh is True:
+            self.secrets = read_configs()
+            self.refresh = False
 
     def configure_layout(self):
         return StreamlitFrontend(render_fn=render_fn)

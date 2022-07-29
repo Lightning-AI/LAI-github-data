@@ -4,7 +4,7 @@ REPOS_OF_INTEREST = [
     #"PyTorchLightning/lightning-transformers",
     #"PyTorchLightning/metrics",
     #"huggingface/accelerate",
-    #"huggingface/transformers",
+    "huggingface/transformers",
     "catalyst-team/catalyst",
     #"google/jax",
     #"pytorch/pytorch",

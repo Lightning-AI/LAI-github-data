@@ -37,11 +37,26 @@ class DatabaseLoader(L.LightningFlow):
             print("query is running")
             return
 
-        self.bigquery.insert(
-            credentials=gcp_credentials,
-            json_rows=dependent_repos,
-            table=table
-        )
+        if dependent_repos:
+
+            # from google.cloud import bigquery
+            # from google.oauth2.service_account import \
+            #     Credentials as SACredentials
+            #
+            # # Construct a BigQuery client object.
+            # client = bigquery.Client(
+            #     project='grid-data-prod',
+            #     credentials=SACredentials.from_service_account_info(gcp_credentials)
+            # )
+            #
+            # errors = client.insert_rows_json(table, dependent_repos)
+            # print(f"errors: {errors}")
+
+            self.bigquery.insert(
+                credentials=gcp_credentials,
+                json_rows=dependent_repos,
+                table=table
+            )
 
     def run(self, gcp_credentials, dependent_repos = [], table = "", action = "", files_to_load: list = None, batch_size: int = 20, *args, **kwargs):
 
@@ -51,27 +66,21 @@ class DatabaseLoader(L.LightningFlow):
                 gcp_credentials=gcp_credentials,
                 table=table
             )
-        print(f"loading files: {files_to_load}")
         if files_to_load is not None:
             self.files_to_load = files_to_load
 
         batch = []
         while self.files_to_load:
-            print(self.files_to_load)
             try:
-                file_to_load = self.files_to_load.pop()
-                with open(file_to_load, "rb") as _file:
-                    repo = pickle.load(_file)
-                    batch.append(repo)
+                with open(self.files_to_load.pop(), "rb") as _file:
+                    batch.append(pickle.load(_file))
             except IndexError:
                 break
 
-            staged_repos = get_repos(batch)
-            staged_users = get_users(batch)
-            staged_licenses = get_licenses(batch)
-            print(staged_repos)
+        if batch:
+
             self.bigquery.insert(
-                json_rows=Payload(staged_repos),
-                table="qa_github.staging_dependent_repos",
+                json_rows=Payload(get_repos(batch)),
+                table="qa_github.repos",
                 credentials=gcp_credentials
             )

@@ -39,8 +39,8 @@ def make_scrape_request(url: str):
 
 class Scrapper(L.LightningWork):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.root_repo = None
         self.dependent_repos = []
         self.store_dependent_repos = []
@@ -92,7 +92,7 @@ class Scrapper(L.LightningWork):
                         dict(
                             repo_id=self.root_repo,
                             dependent_repo_id=dependent_repo,
-                            pacakge_id=package,
+                            package_id=package,
                             seen_at_utc=datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S %Z"),
                             dependent_github_paginate_url=dependent_github_repos_url
                         )

@@ -20,8 +20,8 @@ def select_token(tokens):
 
 class Github(L.LightningWork):
 
-    def __init__(self, tokens, drive_name: str = "lit://repositories"):
-        super().__init__()
+    def __init__(self, tokens, drive_name: str = "lit://repositories", *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.tokens = tokens or []
         self.repos_to_load = []
 
